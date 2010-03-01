@@ -26,7 +26,9 @@ $:.unshift path unless $:.include?(path)
 require 'geokit/geocoders'
 require 'geokit/mappable'
 require 'geokit/acts_as_mappable'
-ActiveRecord::Base.send :include, GeoKit::ActsAsMappable
 
 # make old-style module name "GeoKit" equivalent to new-style "Geokit"
 GeoKit=Geokit
+
+ActiveRecord::Base.send :include, GeoKit::ActsAsMappable
+
