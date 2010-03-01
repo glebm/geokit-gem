@@ -429,7 +429,7 @@ module Geokit
       # Geokit::Geocoders::GoogleGeocoder.geocode('Winnetka', :bias => bounds).state # => 'CA'
       def self.do_geocode(address, options = {})
         bias_str = options[:bias] ? construct_bias_string_from_options(options[:bias]) : ''
-        lang_str = options[:hl].blank? ? '' :  "&#{options[:hl]}"
+        lang_str = options[:lang].blank? ? '' :  "&hl=#{options[:lang]}"
         address_str = address.is_a?(GeoLoc) ? address.to_geocodeable_s : address
         res = self.call_geocoder_service("http://maps.google.com/maps/geo?q=#{Geokit::Inflector::url_escape(address_str)}&output=xml#{bias_str}#{lang_str}&key=#{Geokit::Geocoders::google}&oe=utf-8")
         return GeoLoc.new if !res.is_a?(Net::HTTPSuccess)
