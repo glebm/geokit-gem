@@ -365,6 +365,7 @@ module Geokit
       @province = h[:province]
       @success=false
       @precision='unknown'
+      @accuracy=h[:accuracy]
       @full_address=nil
       super(h[:lat],h[:lng])
     end
