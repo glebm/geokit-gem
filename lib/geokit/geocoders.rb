@@ -130,8 +130,8 @@ module Geokit
       # Main method which calls the do_reverse_geocode template method which subclasses
       # are responsible for implementing.  Returns a populated GeoLoc or an
       # empty one with a failed success code.
-      def self.reverse_geocode(latlng)
-        res = do_reverse_geocode(latlng)
+      def self.reverse_geocode(latlng, options = {})
+        res = do_reverse_geocode(latlng, options)
         return res.success? ? res : GeoLoc.new        
       end
       
@@ -147,7 +147,7 @@ module Geokit
       # Not all geocoders can do reverse geocoding. So, unless the subclass explicitly overrides this method,
       # a call to reverse_geocode will return an empty GeoLoc. If you happen to be using MultiGeocoder,
       # this will cause it to failover to the next geocoder, which will hopefully be one which supports reverse geocoding.
-      def self.do_reverse_geocode(latlng)
+      def self.do_reverse_geocode(latlng, options = {})
         return GeoLoc.new
       end
 
@@ -393,9 +393,10 @@ module Geokit
       private 
       
       # Template method which does the reverse-geocode lookup.
-      def self.do_reverse_geocode(latlng) 
+      def self.do_reverse_geocode(latlng, options = {})
+        lang_str = options[:lang].blank? ? '' :  "&hl=#{options[:lang]}"        
         latlng=LatLng.normalize(latlng)
-        res = self.call_geocoder_service("http://maps.google.com/maps/geo?ll=#{Geokit::Inflector::url_escape(latlng.ll)}&output=xml&key=#{Geokit::Geocoders::google}&oe=utf-8")
+        res = self.call_geocoder_service("http://maps.google.com/maps/geo?q=#{Geokit::Inflector::url_escape(latlng.ll)}&output=xml#{lang_str}&key=#{Geokit::Geocoders::google}&oe=utf-8")
         #        res = Net::HTTP.get_response(URI.parse("http://maps.google.com/maps/geo?ll=#{Geokit::Inflector::url_escape(address_str)}&output=xml&key=#{Geokit::Geocoders::google}&oe=utf-8"))
         return GeoLoc.new unless (res.is_a?(Net::HTTPSuccess) || res.is_a?(Net::HTTPOK))
         xml = res.body
@@ -669,11 +670,11 @@ module Geokit
       # This method will call one or more geocoders in the order specified in the 
       # configuration until one of the geocoders work, only this time it's going
       # to try to reverse geocode a geographical point.
-      def self.do_reverse_geocode(latlng)
+      def self.do_reverse_geocode(latlng, options = {})
         Geokit::Geocoders::provider_order.each do |provider|
           begin
             klass = Geokit::Geocoders.const_get "#{Geokit::Inflector::camelize(provider.to_s)}Geocoder"
-            res = klass.send :reverse_geocode, latlng
+            res = klass.send :reverse_geocode, latlng, options
             return res if res.success?
           rescue
             logger.error("Something has gone very wrong during reverse geocoding, OR you have configured an invalid class name in Geokit::Geocoders::provider_order. LatLng: #{latlng}. Provider: #{provider}")
