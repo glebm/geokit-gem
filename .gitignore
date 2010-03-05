@@ -1,5 +1,5 @@
 .loadpath
 .project
 pkg
-.idea
+.idea/*
 nbproject/
