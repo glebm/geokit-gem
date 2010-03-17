@@ -76,7 +76,7 @@ module Geokit
     # Instance methods to mix into ActiveRecord.
     module SingletonMethods #:nodoc:
       
-      def sphere_distance_sql(lat, lng, multiplier)
+      def mysql_sphere_distance_sql(lat, lng, multiplier)
         %|
           (ACOS(least(1,COS(#{lat})*COS(#{lng})*COS(RADIANS(#{qualified_lat_column_name}))*COS(RADIANS(#{qualified_lng_column_name}))+
           COS(#{lat})*SIN(#{lng})*COS(RADIANS(#{qualified_lat_column_name}))*SIN(RADIANS(#{qualified_lng_column_name}))+
@@ -84,7 +84,7 @@ module Geokit
         |
       end
 
-      def flat_distance_sql(origin, lat_degree_units, lng_degree_units)
+      def mysql_flat_distance_sql(origin, lat_degree_units, lng_degree_units)
         %|
           SQRT(POW(#{lat_degree_units}*(#{origin.lat}-#{qualified_lat_column_name}),2)+
           POW(#{lng_degree_units}*(#{origin.lng}-#{qualified_lng_column_name}),2))
@@ -373,7 +373,7 @@ module Geokit
         lng = deg2rad(origin.lng)
         multiplier = units_sphere_multiplier(units)
 
-        sphere_distance_sql(lat, lng, multiplier)
+        mysql_sphere_distance_sql(lat, lng, multiplier)
       end
         
       # Returns the distance SQL using the flat-world formula (Phythagorean Theory).  The SQL is tuned
@@ -382,7 +382,7 @@ module Geokit
         lat_degree_units = units_per_latitude_degree(units)
         lng_degree_units = units_per_longitude_degree(origin.lat, units)
           
-        flat_distance_sql(origin, lat_degree_units, lng_degree_units)
+        mysql_flat_distance_sql(origin, lat_degree_units, lng_degree_units)
       end
     end
   end
