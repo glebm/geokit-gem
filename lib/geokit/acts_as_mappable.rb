@@ -373,7 +373,7 @@ module Geokit
         lng = deg2rad(origin.lng)
         multiplier = units_sphere_multiplier(units)
 
-        adapter.sphere_distance_sql(lat, lng, multiplier) if adapter
+        sphere_distance_sql(lat, lng, multiplier)
       end
         
       # Returns the distance SQL using the flat-world formula (Phythagorean Theory).  The SQL is tuned
@@ -382,7 +382,7 @@ module Geokit
         lat_degree_units = units_per_latitude_degree(units)
         lng_degree_units = units_per_longitude_degree(origin.lat, units)
           
-        adapter.flat_distance_sql(origin, lat_degree_units, lng_degree_units)
+        flat_distance_sql(origin, lat_degree_units, lng_degree_units)
       end
     end
   end
