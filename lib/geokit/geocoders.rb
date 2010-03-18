@@ -12,7 +12,7 @@ module Geokit
   class TooManyQueriesError < GeokitError; end
   class TimeoutError < GeokitError; end
   class InvalidResponseError < GeokitError; end
-  class InvalidStatusError < GeokitError; end
+  class InvalidGeoStatusCodeError < GeokitError; end
 
   module Inflector
 
@@ -462,7 +462,8 @@ module Geokit
       def self.xml2GeoLoc(xml, address="")
         doc=REXML::Document.new(xml)
 
-        if doc.elements['//kml/Response/Status/code'].text == '200'
+        response_code = doc.elements['//kml/Response/Status/code'].text rescue nil
+        if response_code == '200'
           geoloc = nil
           # Google can return multiple results as //Placemark elements.
           # iterate through each and extract each placemark as a geoloc
@@ -478,12 +479,15 @@ module Geokit
             end
           end
           return geoloc
-        elsif doc.elements['//kml/Response/Status/code'].text == '602'
-          logger.info "Google returned a 602 status, too many queries. The given key has gone over the requests limit in the 24 hour period or has submitted too many requests in too short a period of time. If you're sending multiple requests in parallel or in a tight loop, use a timer or pause in your code to make sure you don't send the requests too quickly."
+        elsif response_code == '620'
+          logger.info "Google returned a 620 status, too many queries. The given key has gone over the requests limit in the 24 hour period or has submitted too many requests in too short a period of time. If you're sending multiple requests in parallel or in a tight loop, use a timer or pause in your code to make sure you don't send the requests too quickly."
           raise Geokit::TooManyQueriesError
+        elsif response_code
+          logger.info "Google was unable to geocode address: #{address}. Response code: #{response_code}"
+          raise Geokit::InvalidGeoStatusCodeError.new(response_code)
         else
-          logger.info "Google was unable to geocode address: "+address
-          raise Geokit::InvalidStatusError
+          logger.info "Google was unable to geocode address: #{address}"
+          raise Geokit::GeokitError
         end
       end
 
