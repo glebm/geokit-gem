@@ -9,11 +9,11 @@ module Geokit
 
   class GeokitError < StandardError; end
 
-  class TimeoutError < GeokitError; end
   class BadKeyError < GeokitError; end
   
   class GeocoderServiceError < GeokitError; end
 
+  class TimeoutError < GeocoderServiceError; end
   class InvalidResponseError < GeocoderServiceError; end
   class TooManyQueriesError < GeocoderServiceError; end
 
