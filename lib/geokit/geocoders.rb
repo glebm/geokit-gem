@@ -145,7 +145,7 @@ module Geokit
         logger.debug "Geocoding:: #{url}"
         Timeout::timeout(Geokit::Geocoders::request_timeout) { return self.do_get(url) } if Geokit::Geocoders::request_timeout
         return self.do_get(url)
-      rescue TimeoutError
+      rescue TimeoutError, Timeout::Error
         raise Geokit::TimeoutError
       end
 
