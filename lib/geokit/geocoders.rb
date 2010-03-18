@@ -129,18 +129,16 @@ module Geokit
     # other geocoders.
     class Geocoder
       # Main method which calls the do_geocode template method which subclasses
-      # are responsible for implementing.  Returns a populated GeoLoc or an
-      # empty one with a failed success code.
+      # are responsible for implementing.  Returns a populated GeoLoc or a
+      # nil one with a failed success code.
       def self.geocode(address, options = {})
-        res = do_geocode(address, options)
-        return res.nil? ? GeoLoc.new : res
+        do_geocode(address, options)
       end
       # Main method which calls the do_reverse_geocode template method which subclasses
-      # are responsible for implementing.  Returns a populated GeoLoc or an
-      # empty one with a failed success code.
+      # are responsible for implementing.  Returns a populated GeoLoc or
+      # nil one with a failed success code.
       def self.reverse_geocode(latlng, options = {})
-        res = do_reverse_geocode(latlng, options)
-        return res.success? ? res : GeoLoc.new
+        do_reverse_geocode(latlng, options)
       end
 
       # Call the geocoder service using the timeout if configured.
@@ -156,7 +154,7 @@ module Geokit
       # a call to reverse_geocode will return an empty GeoLoc. If you happen to be using MultiGeocoder,
       # this will cause it to failover to the next geocoder, which will hopefully be one which supports reverse geocoding.
       def self.do_reverse_geocode(latlng, options = {})
-        return GeoLoc.new
+        return nil
       end
 
       protected
