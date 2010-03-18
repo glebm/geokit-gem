@@ -15,6 +15,8 @@ module Geokit
 
   class TimeoutError < GeocoderServiceError; end
   class InvalidResponseError < GeocoderServiceError; end
+
+  class InvalidStatusCodeError < GeocoderServiceError; end
   class TooManyQueriesError < GeocoderServiceError; end
 
   module Inflector
@@ -440,7 +442,7 @@ module Geokit
 
       GOOGLE_STATUS_CODES = {
         200 => "G_GEO_SUCCESS",
-        # InvalidResponseError
+        # InvalidStatusCodeError
         400 => "G_GEO_BAD_REQUEST",
         500 => "G_GEO_SERVER_ERROR",
         601 => "G_GEO_MISSING_QUERY",
@@ -505,13 +507,13 @@ module Geokit
             return nil
           elsif [400, 500, 601].include?(response_code)
             # G_GEO_BAD_REQUEST, G_GEO_SERVER_ERROR, G_GEO_MISSING_QUERY, G_GEO_BAD_KEY
-            raise Geokit::InvalidResponseError(GOOGLE_STATUS_CODES[response_code])
+            raise Geokit::InvalidStatusCodeError.new(GOOGLE_STATUS_CODES[response_code])
           elsif response_code == 620
             # G_GEO_TOO_MANY_QUERIES
-            raise Geokit::TooManyQueriesError(GOOGLE_STATUS_CODES[response_code])
+            raise Geokit::TooManyQueriesError.new(GOOGLE_STATUS_CODES[response_code])
           elsif response_code == 610
             # G_GEO_BAD_KEY
-            raise Geokit::BadKeyError(GOOGLE_STATUS_CODES[response_code])
+            raise Geokit::BadKeyError.new(GOOGLE_STATUS_CODES[response_code])
           else
             raise Geokit::GeokitError
           end
