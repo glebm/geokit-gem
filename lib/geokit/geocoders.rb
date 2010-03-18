@@ -481,7 +481,7 @@ module Geokit
           return geoloc
         elsif response_code == '620'
           logger.info "Google returned a 620 status, too many queries. The given key has gone over the requests limit in the 24 hour period or has submitted too many requests in too short a period of time. If you're sending multiple requests in parallel or in a tight loop, use a timer or pause in your code to make sure you don't send the requests too quickly."
-          raise Geokit::TooManyQueriesError
+          raise Geokit::TooManyQueriesError(response_code)
         elsif response_code
           logger.info "Google was unable to geocode address: #{address}. Response code: #{response_code}"
           raise Geokit::InvalidGeoStatusCodeError.new(response_code)
