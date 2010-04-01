@@ -437,6 +437,7 @@ module Geokit
         return GeoLoc.new if !res.is_a?(Net::HTTPSuccess)
         xml = res.body
         xml = xml.force_encoding(Encoding::UTF_8) if xml.respond_to?(:force_encoding)
+	address = address.force_encoding(Encoding::UTF_8) if address.respond_to?(:force_encoding)
         logger.debug "Google geocoding. Address: #{address}. Result: #{xml}"
         return self.xml2GeoLoc(xml, address)        
       end
