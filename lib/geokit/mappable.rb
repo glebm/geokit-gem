@@ -43,9 +43,9 @@ module Geokit
         when :sphere
           begin
             units_sphere_multiplier(units) * 
-                Math.acos( Math.sin(deg2rad(from.lat)) * Math.sin(deg2rad(to.lat)) + 
+            Math.acos( Math.sin(deg2rad(from.lat)) * Math.sin(deg2rad(to.lat)) +
                 Math.cos(deg2rad(from.lat)) * Math.cos(deg2rad(to.lat)) * 
-                Math.cos(deg2rad(to.lng) - deg2rad(from.lng)))
+              Math.cos(deg2rad(to.lng) - deg2rad(from.lng)))
           rescue Errno::EDOM
             0.0
           end
@@ -76,9 +76,9 @@ module Geokit
       def endpoint(start,heading, distance, options={})
         units = options[:units] || Geokit::default_units
         radius = case units
-          when :kms; EARTH_RADIUS_IN_KMS
-          when :nms; EARTH_RADIUS_IN_NMS
-          else EARTH_RADIUS_IN_MILES
+        when :kms; EARTH_RADIUS_IN_KMS
+        when :nms; EARTH_RADIUS_IN_NMS
+        else EARTH_RADIUS_IN_MILES
         end
         start=Geokit::LatLng.normalize(start)        
         lat=deg2rad(start.lat)
@@ -87,10 +87,10 @@ module Geokit
         distance=distance.to_f
         
         end_lat=Math.asin(Math.sin(lat)*Math.cos(distance/radius) +
-                          Math.cos(lat)*Math.sin(distance/radius)*Math.cos(heading))
+            Math.cos(lat)*Math.sin(distance/radius)*Math.cos(heading))
 
         end_lng=lng+Math.atan2(Math.sin(heading)*Math.sin(distance/radius)*Math.cos(lat),
-                               Math.cos(distance/radius)-Math.sin(lat)*Math.sin(end_lat))
+          Math.cos(distance/radius)-Math.sin(lat)*Math.sin(end_lat))
 
         LatLng.new(rad2deg(end_lat),rad2deg(end_lng))
       end
@@ -133,18 +133,18 @@ module Geokit
       # Returns the multiplier used to obtain the correct distance units.
       def units_sphere_multiplier(units)
         case units
-          when :kms; EARTH_RADIUS_IN_KMS
-          when :nms; EARTH_RADIUS_IN_NMS
-          else EARTH_RADIUS_IN_MILES
+        when :kms; EARTH_RADIUS_IN_KMS
+        when :nms; EARTH_RADIUS_IN_NMS
+        else EARTH_RADIUS_IN_MILES
         end
       end
 
       # Returns the number of units per latitude degree.
       def units_per_latitude_degree(units)
         case units
-          when :kms; KMS_PER_LATITUDE_DEGREE
-          when :nms; NMS_PER_LATITUDE_DEGREE
-          else MILES_PER_LATITUDE_DEGREE
+        when :kms; KMS_PER_LATITUDE_DEGREE
+        when :nms; NMS_PER_LATITUDE_DEGREE
+        else MILES_PER_LATITUDE_DEGREE
         end
       end
     
@@ -152,9 +152,9 @@ module Geokit
       def units_per_longitude_degree(lat, units)
         miles_per_longitude_degree = (LATITUDE_DEGREES * Math.cos(lat * PI_DIV_RAD)).abs
         case units
-          when :kms; miles_per_longitude_degree * KMS_PER_MILE
-          when :nms; miles_per_longitude_degree * NMS_PER_MILE
-          else miles_per_longitude_degree
+        when :kms; miles_per_longitude_degree * KMS_PER_MILE
+        when :nms; miles_per_longitude_degree * NMS_PER_MILE
+        else miles_per_longitude_degree
         end
       end  
     end
@@ -394,7 +394,7 @@ module Geokit
 
     # Returns the street name portion of the street address.
     def street_name
-       street_address[street_number.length, street_address.length].strip if street_address
+      street_address[street_number.length, street_address.length].strip if street_address
     end
 
     # gives you all the important fields as key-value pairs
@@ -405,10 +405,12 @@ module Geokit
     end
     alias to_hash hash
 
-    # Sets the city after capitalizing each word within the city name.
-    def city=(city)
-      @city = Geokit::Inflector::titleize(city) if city
-    end
+    # This sucks as it removes dashes from city name, what makes it improper
+    # e.g. http://pl.wikipedia.org/wiki/Sint-Niklaas
+    #    # Sets the city after capitalizing each word within the city name.
+    #    def city=(city)
+    #      @city = Geokit::Inflector::titleize(city) if city
+    #    end
 
     # Sets the street address after capitalizing each word within the street address.
     def street_address=(address)
