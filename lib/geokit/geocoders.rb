@@ -4,6 +4,7 @@ require 'rexml/document'
 require 'yaml'
 require 'timeout'
 require 'logger'
+require 'iconv'
 
 module Geokit
 
@@ -134,7 +135,7 @@ module Geokit
       # are responsible for implementing.  Returns a populated GeoLoc or a
       # nil one with a failed success code.
       def self.geocode(address, options = {})
-        do_geocode(address, options)
+        do_geocode(Iconv.iconv('UTF-8//IGNORE', 'UTF-8', address), options)
       end
       # Main method which calls the do_reverse_geocode template method which subclasses
       # are responsible for implementing.  Returns a populated GeoLoc or
