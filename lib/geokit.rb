@@ -30,5 +30,3 @@ require 'geokit/acts_as_mappable'
 # make old-style module name "GeoKit" equivalent to new-style "Geokit"
 GeoKit=Geokit
 
-ActiveRecord::Base.send :include, GeoKit::ActsAsMappable
-
