@@ -5,6 +5,7 @@ require 'yaml'
 require 'timeout'
 require 'logger'
 require 'iconv'
+require 'uri'
 
 module Geokit
 
@@ -48,9 +49,7 @@ module Geokit
     end
 
     def url_escape(s)
-      s.gsub(/([^ a-zA-Z0-9_.-]+)/nu) do
-        '%' + $1.unpack('H2' * $1.size).join('%').upcase
-      end.tr(' ', '+')
+      URI::escape(s)
     end
 
     def camelize(str)
@@ -411,6 +410,7 @@ module Geokit
           raise Geokit::InvalidResponseError
         end
         xml = res.body
+        xml = xml.force_encoding(Encoding::UTF_8) if xml.respond_to?(:force_encoding)
         logger.debug "Google reverse-geocoding. LL: #{latlng}. Result: #{xml}"
         return self.xml2GeoLoc(xml)
       end
@@ -466,6 +466,8 @@ module Geokit
           raise Geokit::InvalidResponseError
         end
         xml = res.body
+        xml = xml.force_encoding(Encoding::UTF_8) if xml.respond_to?(:force_encoding)
+	address = address.force_encoding(Encoding::UTF_8) if address.respond_to?(:force_encoding)
         logger.debug "Google geocoding. Address: #{address}. Result: #{xml}"
         return self.xml2GeoLoc(xml, address)
       end
